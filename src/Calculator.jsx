@@ -4,15 +4,20 @@ import Axios from 'axios';
 function Calculator() {
     const [pincode, setpincode] = useState(411014);
     const [result, setResult] = useState([]);
+    const [Disable, setDisable] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setDisable(true);
+
         try {
+
             const response = await Axios.get(`http://localhost:3000/getPincodeData?pincode=${pincode}`);
             console.log(response.data[0].PostOffice);
             setResult(response.data[0].PostOffice);
+            setDisable(false);
 
-            alert("Response Recived")
+            alert("Response Recived");
         } catch (error) {
             console.error(error);
         }
@@ -22,8 +27,10 @@ function Calculator() {
 
         <>
             <div className="bg-gray-100 min-h-screen flex flex-col justify-center items-center">
-                <div className="bg-white p-10 w-7xl ml-10 rounded border-2 border-gray-600">
-                    <h2 className="text-2xl font-bold mb-10">Post Office Finder WebApp:</h2>
+                <div className="bg-white p-10 w-7xl border-2 border-gray-600">
+                    <h2 className="text-2xl font-bold mb-4">Post Office Finder WebApp:</h2>
+
+
                     <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
                         <div className="flex items-center gap-3">
                             <p>Location ZipCode:</p>
@@ -31,13 +38,17 @@ function Calculator() {
                                 type="number"
                                 value={pincode}
                                 onChange={(e) => setpincode(e.target.value)}
-                                className="px-4 py-2 max-w-40 border border-gray-300 rounded focus:outline-none focus:border-blue-500"
+                                className="px-4 py-2 max-w-40 border border-gray-300 rounded"
                                 placeholder="Enter Pincode"
                             />
                         </div>
                         <button
                             type="submit"
-                            className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 focus:outline-none focus:bg-blue-600"
+                            className={` text-white py-2 px-4 rounded 
+                            ${Disable == true ? "bg-gray-800" : "bg-blue-500"}
+                            `}
+                            disabled={Disable}
+
                         >
                             Submit
                         </button>
@@ -49,7 +60,7 @@ function Calculator() {
 
                 <>
                     {result.length === 0 ?
-                        <div className='mt-10'>
+                        <div className='mt-10 text-red-500'>
                             Enter Pincode value
                         </div>
                         :
@@ -58,6 +69,7 @@ function Calculator() {
                             <table className="border-collapse border border-gray-400">
                                 <thead>
                                     <tr>
+                                        <th className="border border-gray-400 px-4 py-2">Sr. No.</th>
                                         <th className="border border-gray-400 px-4 py-2">Name</th>
                                         <th className="border border-gray-400 px-4 py-2">Branch Type</th>
                                         <th className="border border-gray-400 px-4 py-2">District</th>
@@ -70,6 +82,7 @@ function Calculator() {
                                 <tbody>
                                     {result.map((item, index) => (
                                         <tr key={index}>
+                                            <td className="border border-gray-400 px-4 py-2">{index + 1}</td>
                                             <td className="border border-gray-400 px-4 py-2">{item.Name}</td>
                                             <td className="border border-gray-400 px-4 py-2">{item.BranchType}</td>
                                             <td className="border border-gray-400 px-4 py-2">{item.District}</td>
